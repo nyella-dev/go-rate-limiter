@@ -5,16 +5,25 @@ import (
 	"log"
 	"net"
 	"net/http"
+	"runtime"
 	"strings"
 )
 
 func main() {
-	rateLimiter := NewRateLimiter(10)
-
-	http.HandleFunc("/", handleRequest(rateLimiter))
 	log.SetFlags(0)
+	runtime.GOMAXPROCS(1)
+	rateLimiter := NewRateLimiter(1000)
+	http.HandleFunc("/", handleRequest(rateLimiter))
+
+	// log every panic
+	defer func() {
+		if r := recover(); r != nil {
+			log.Println("Server crashed:", r)
+		}
+	}()
+
 	fmt.Println("Server running on: http://localhost:8080")
-	http.ListenAndServe(":8080", nil)
+	log.Fatal(http.ListenAndServe(":8080", nil))
 }
 
 func handleRequest(rl *RateLimiter) http.HandlerFunc {

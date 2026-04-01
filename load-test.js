@@ -2,8 +2,15 @@ import http from 'k6/http';
 import { check } from 'k6';
 
 export let options = {
-    vus: 10,         // 10 virtual users
-    duration: '30s'  // for 30 seconds
+    stages: [
+        { duration: '10s', target: 100 },   // ramp to 100 users
+        { duration: '10s', target: 500 },   // ramp to 500 users
+        { duration: '10s', target: 1000 },  // ramp to 1000 users
+        { duration: '10s', target: 2000 },  // ramp to 2000 users
+        { duration: '10s', target: 5000 },  // ramp to 5000 users
+        { duration: '10s', target: 10000 }, // ramp to 10000 users
+        { duration: '10s', target: 0 },     // ramp back down
+    ]
 }
 
 const JWTS = [
@@ -15,7 +22,6 @@ const JWTS = [
 ]
 
 export default function() {
-    // cycle through JWTs
     const jwt = JWTS[Math.floor(Math.random() * JWTS.length)]
 
     const res = http.post('http://127.0.0.1:8080/hello',
@@ -26,7 +32,6 @@ export default function() {
         }}
     )
 
-    // check response
     check(res, {
         'allowed': (r) => r.status === 200,
         'rate limited': (r) => r.status === 429,

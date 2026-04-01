@@ -1,5 +1,7 @@
 package main
 
+import "sync"
+
 type Counter interface {
 	Increment(key string) int
 	Get(key string) int
@@ -8,6 +10,7 @@ type Counter interface {
 
 type MemoryCounter struct {
 	counts map[string]int
+	mu     sync.Mutex
 }
 
 func NewMemoryCounter() *MemoryCounter {
@@ -17,14 +20,20 @@ func NewMemoryCounter() *MemoryCounter {
 }
 
 func (m *MemoryCounter) Increment(key string) int {
+	m.mu.Lock()
+	defer m.mu.Unlock()
 	m.counts[key]++
 	return m.counts[key]
 }
 
 func (m *MemoryCounter) Get(key string) int {
+	m.mu.Lock()
+	defer m.mu.Unlock()
 	return m.counts[key]
 }
 
 func (m *MemoryCounter) Reset(key string) {
+	m.mu.Lock()
+	defer m.mu.Unlock()
 	m.counts[key] = 0
 }
