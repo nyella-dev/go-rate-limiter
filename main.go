@@ -12,7 +12,7 @@ import (
 func main() {
 	log.SetFlags(0)
 	runtime.GOMAXPROCS(1)
-	rateLimiter := NewRateLimiter(1000)
+	rateLimiter := NewRateLimiter(10, NewRedisCounter("localhost:6379"))
 	http.HandleFunc("/", handleRequest(rateLimiter))
 
 	// log every panic

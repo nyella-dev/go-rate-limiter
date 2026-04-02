@@ -3,12 +3,9 @@ import { check } from 'k6';
 
 export let options = {
     stages: [
-        { duration: '10s', target: 100 },   // ramp to 100 users
-        { duration: '10s', target: 500 },   // ramp to 500 users
-        { duration: '10s', target: 1000 },  // ramp to 1000 users
-        { duration: '10s', target: 2000 },  // ramp to 2000 users
         { duration: '10s', target: 5000 },  // ramp to 5000 users
         { duration: '10s', target: 10000 }, // ramp to 10000 users
+        { duration: '10s', target: 20000 }, // ramp to 10000 users
         { duration: '10s', target: 0 },     // ramp back down
     ]
 }
@@ -24,7 +21,7 @@ const JWTS = [
 export default function() {
     const jwt = JWTS[Math.floor(Math.random() * JWTS.length)]
 
-    const res = http.post('http://127.0.0.1:8080/hello',
+    const res = http.post('http://192.168.23.129:8080',
         JSON.stringify({ userId: '123', name: 'Nyella' }),
         { headers: {
             'Content-Type': 'application/json',

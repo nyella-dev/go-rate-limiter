@@ -5,13 +5,13 @@ type Limiter interface {
 }
 
 type RateLimiter struct {
-	counter *MemoryCounter
+	counter Counter
 	limit   int
 }
 
-func NewRateLimiter(limit int) *RateLimiter {
+func NewRateLimiter(limit int, counter Counter) *RateLimiter {
 	return &RateLimiter{
-		counter: NewMemoryCounter(),
+		counter: counter,
 		limit:   limit,
 	}
 }
