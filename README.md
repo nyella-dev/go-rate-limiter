@@ -13,7 +13,8 @@ Incoming requests hit NGINX which load balances across multiple rate limiter ins
 
 Because all instances share the same Redis store, the rate limit is enforced consistently regardless of which instance handles the request.
 
-<img width="762" height="551" alt="image" src="https://github.com/user-attachments/assets/08029f7e-6f37-4cc3-adb4-ba3198305e69" />
+<img width="1372" height="1117" alt="image" src="https://github.com/user-attachments/assets/36174ff7-7b79-4784-82e6-a58e073d2404" />
+
 
 ### Token-based limiting
 If a request includes an `Authorization: Bearer <token>` header, the token is used as the rate limit key. This means each user has their own independent counter and window.
