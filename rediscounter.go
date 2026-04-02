@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"strconv"
+	"time"
 
 	"github.com/redis/go-redis/v9"
 )
@@ -23,8 +24,12 @@ func NewRedisCounter(addr string) *RedisCounter {
 	}
 }
 
-func (r *RedisCounter) Increment(key string) int {
+func (r *RedisCounter) Increment(key string, window time.Duration) int {
 	count, _ := r.client.Incr(r.ctx, key).Result()
+	if count == 1 {
+		// only set expiry on first increment — starts the window
+		r.client.Expire(r.ctx, key, window)
+	}
 	return int(count)
 }
 

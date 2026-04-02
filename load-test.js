@@ -1,36 +1,36 @@
 import http from 'k6/http';
-import { check } from 'k6';
+import { check, sleep } from 'k6';
 
 export let options = {
     stages: [
-        { duration: '10s', target: 5000 },  // ramp to 5000 users
-        { duration: '10s', target: 10000 }, // ramp to 10000 users
-        { duration: '10s', target: 20000 }, // ramp to 10000 users
-        { duration: '10s', target: 0 },     // ramp back down
+        { duration: '10s', target: 10 },
+        { duration: '10s', target: 20 },
+        { duration: '10s', target: 30 },
+        { duration: '10s', target: 0 },
     ]
 }
 
-const JWTS = [
-    'abc1234567',
-    'xyz9876543',
-    'def4561230',
-    'ghi7890123',
-    'jkl3456789'
+const TOKENS = [
+    'user_one', 'user_two', 'user_three', 'user_four', 'user_five'
 ]
 
 export default function() {
-    const jwt = JWTS[Math.floor(Math.random() * JWTS.length)]
+    const noToken = Math.random() < 0.3
 
-    const res = http.post('http://192.168.23.129:8080',
+    const headers = { 'Content-Type': 'application/json' }
+    if (!noToken) {
+        const token = TOKENS[Math.floor(Math.random() * TOKENS.length)]
+        headers['Authorization'] = `Bearer ${token}`
+    }
+
+    const res = http.post('http://localhost/hello',
         JSON.stringify({ userId: '123', name: 'Nyella' }),
-        { headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${jwt}`
-        }}
+        { headers }
     )
 
     check(res, {
         'allowed': (r) => r.status === 200,
         'rate limited': (r) => r.status === 429,
     })
+    sleep(1)
 }

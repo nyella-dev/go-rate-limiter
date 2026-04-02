@@ -1,9 +1,12 @@
 package main
 
-import "sync"
+import (
+	"sync"
+	"time"
+)
 
 type Counter interface {
-	Increment(key string) int
+	Increment(key string, window time.Duration) int
 	Get(key string) int
 	Reset(key string)
 }
@@ -19,7 +22,7 @@ func NewMemoryCounter() *MemoryCounter {
 	}
 }
 
-func (m *MemoryCounter) Increment(key string) int {
+func (m *MemoryCounter) Increment(key string, window time.Duration) int {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	m.counts[key]++
